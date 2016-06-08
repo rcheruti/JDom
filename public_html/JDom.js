@@ -393,6 +393,7 @@
   };
   var proto = ($.prototype = new Array());
   $.fn = proto;
+  //$.constructor = Array;
   
     // Adicionar funções auxiliares:
   $.is$ = function(val){ return val instanceof $; };
@@ -401,7 +402,7 @@
   $.isDef = function(val){ return !$.isUndef(val); };
   $.isFunc = function(val){ return (typeof val === 'function'); };
   $.isNumber = function(val){ return !isNaN(parseFloat(val)) && isFinite(val); };
-  $.isObj = function(val){ return val && (typeof val === 'object') && !proto.isArray(val); };
+  $.isObj = function(val){ return !!(val && (typeof val === 'object') && !$.isArray(val)); };
   $.isString = function(val){ return (typeof val === 'string'); };
   $.isUndef = function(val){ return (typeof val === 'undefined'); };
   

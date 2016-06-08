@@ -8,13 +8,67 @@
     <link href="css/w3.css" rel="stylesheet" type="text/css"/>
     <link href="css/w3-theme-teal.css" rel="stylesheet" type="text/css"/>
     
+    <!--  Libs  -->
     <script src="JDom.js" type="text/javascript"></script>
     <script src="testes.js" type="text/javascript"></script>
+    
+    <!--  Jasmine  -->
+    <script src="jasmine/jasmine.js" type="text/javascript"></script>
+    <script src="jasmine/jasmine-html.js" type="text/javascript"></script>
+    <script src="jasmine/boot.js" type="text/javascript"></script>
+    <link href="jasmine/jasmine.css" rel="stylesheet" type="text/css"/>
+    
+    <!--  Testes  -->
+    <script src="testes/funcoesEstaticas$.js" type="text/javascript"></script>
+    <script src="testes/find.js" type="text/javascript"></script>
+    <script src="testes/textAndHTML.js" type="text/javascript"></script>
     
   </head>
   <body>
     
+    <!--  $(...) e $.find(...)  -->
+    <div class="find1Parent2">
+      <div class="find1Parent1">
+        <div class="find1">
+          <div class="elemento1">Texto 1</div>
+          <div class="elemento2" data-attr1="valor2">
+            <ul>
+              <li class="elemento1">Lista 1</li>
+              <li>Lista 2</li>
+              <li>Lista 3</li>
+            </ul>
+          </div>
+          <div class="elemento3" data-attr1="valor3">
+            <section>
+              <h3>Cabeçalho 1</h3>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
     
+    <!--  $.text(...)  -->
+    <div class="texto1">
+      <div class="elemento1">Texto 1</div>
+      <div class="elemento2">Texto 2</div>
+      <div class="elemento3">Texto 3</div>
+    </div>
     
+    <!--  $.html(...)  -->
+    <div class="html1">
+      <div class="elemento1">Texto 1</div>
+      <div class="elemento2"><span>Texto 2</span></div>
+      <div class="elemento3">Texto 3</div>
+    </div>
+    
+    <!--  para $.append(...)  -->
+    <div class="append1">
+      <div class="elemento1">Append 1</div>
+      <div class="elemento2"><span>Append 2</span></div>
+      <div class="elemento3">Append 3</div>
+    </div>
+    
+    <!--  ========   Colocar quadro do Jasmine mais para baixo   ==========  -->
+    <div style="margin: 0 0 20px;"></div>
   </body>
 </html>

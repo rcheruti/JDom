@@ -20,6 +20,9 @@ describe('Testando funções de busca pelo DOM e no objeto "$":',function(){
     // Atenção! Só verifica o primeiro elemento da lista!
     expect( $('.find1 .elemento1').is('li') ).toBe(false); 
     expect( $('.find1 .elemento1').eq(1).is('li') ).toBe(true); 
+    // Testando se podemos comparar com elementos MinJs também:
+    expect( $('.find1').is( $('.find1 .elemento1').parent() ) ).toBe(true);
+    expect( $('.find1').is( $('.find1 .elemento1').parent()[0] ) ).toBe(true);
   });
   it('Testando $.find(...):',function(){
     var el = $('.find1');

@@ -80,7 +80,11 @@
                         || ElementProto.msMatchesSelector
                         || ElementProto.oMatchesSelector;
   if(!ElementProto.matches) ElementProto.matches = function( str ){ return matchesSelector.call(this,str); };
-  ElementProto.is = ElementProto.matches ;
+  ElementProto.is = function(strOrObj){
+    if( $.is$(strOrObj) && strOrObj.length ) return this === strOrObj[0];
+    if( $.isString(strOrObj) ) return this.matches(strOrObj);
+    return this === strOrObj;
+  };
   
   ElementProto.find = function (str) {
     var nodeList = this.querySelectorAll(str), len = nodeList.length;
@@ -243,6 +247,14 @@
   ElementProto.parent = function(){
     return this.parentNode;
   };
+  ElementProto.parents = function(){
+    var arr = [], el = this.parent(), temp;
+    while( (temp = el.parentNode) ){
+      arr.push(el);
+      el = temp;
+    }
+    return $(arr);
+  };
   ElementProto.prepend = function( /*...el*/ ){
     var el, lenArg = arguments.length, j = lenArg;
     for(; j > 0; j--){
@@ -372,6 +384,28 @@
   };
   
   
+  ElementProto.position = function(){
+    var parent = this.parent();
+    return {
+      top: this.offsetTop,
+      left: this.offsetLeft,
+      right: parent.offsetWidth? parent.offsetWidth - this.offsetLeft - this.offsetWidth : 0,
+      bottom: parent.offsetHeight? parent.offsetHeight - this.offsetTop - this.offsetHeight : 0
+    };
+  };
+  ElementProto.offset = function( str ){
+    var parents = this.parents(), res = this.position(), g, pos;
+    for(g in parents){
+      if( str && parents[g].is(str) ) break;
+      pos = parents[g].position();
+      res.top += pos.top;
+      res.left += pos.left;
+      res.right += pos.right;
+      res.bottom += pos.bottom;
+    }
+    return res;
+  };
+  
 
   //===========================================================================
   //          $ function
@@ -411,6 +445,23 @@
   $.isString = function(val){ return (typeof val === 'string'); };
   $.isUndef = function(val){ return (typeof val === 'undefined'); };
   
+  // Sobreescrevendo algumas funções do protótipo de Array:
+  var 
+      pushFunc = proto.push;
+  
+  proto.push = function(){
+    var i = 0, len = arguments.length, el, g;
+    for(; i < len; i++){
+      el = arguments[i];
+      if( $.is$(el) ){
+        for(g in el) pushFunc.call(this, el[g] );
+      }else{
+        pushFunc.call(this, el);
+      }
+    }
+    return this.length;
+  };
+  
   
   // !!!  Atenção: as linhas comentadas, com traços, estão pendentes!  !!!
   
@@ -443,9 +494,12 @@
       ['is'               ,GETTER_FIRST       ,false],
       ['next'             ,GETTER_FIRST       ,null],
       ['off'              ,SETTER             ],
+      ['offset'           ,GETTER_FIRST       ],
       ['on'               ,SETTER             ],
       ['one'              ,SETTER             ],
       ['parent'           ,GETTER             ],
+      ['parents'          ,GETTER             ],
+      ['position'         ,GETTER_FIRST       ],
       ['prepend'          ,SETTER             ],
       ['prop'             ,MIX_GETTER_FIRST   ,null],
       //--- ['ready'],
@@ -478,6 +532,10 @@
   };
   proto.eq = function(val){
     return $([ this[val] ]);
+  };
+  proto.removeDuplicates = function(){
+    _removeEquals(this);
+    return this;
   };
   
     // bloquear a iteração desses elementos:
@@ -553,7 +611,6 @@
     });
   }
   
-  /*
   function _removeEquals( arr ){
     var len = arr.length, i = len, j;
     while(i--){

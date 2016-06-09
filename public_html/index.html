@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>JDom</title>
+    <title>MinJq</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
@@ -9,8 +9,7 @@
     <link href="css/w3-theme-teal.css" rel="stylesheet" type="text/css"/>
     
     <!--  Libs  -->
-    <script src="JDom.js" type="text/javascript"></script>
-    <script src="testes.js" type="text/javascript"></script>
+    <script src="MinJq.js" type="text/javascript"></script>
     
     <!--  Jasmine  -->
     <script src="jasmine/jasmine.js" type="text/javascript"></script>
@@ -23,9 +22,19 @@
     <script src="testes/find.js" type="text/javascript"></script>
     <script src="testes/textAndHTML.js" type="text/javascript"></script>
     <script src="testes/classesAndAttr.js" type="text/javascript"></script>
+    <script src="testes/offsetAndPosition.js" type="text/javascript"></script>
+    <script src="testes/ArrayPrototype.js" type="text/javascript"></script>
+    
+    <link href="css/estilo.css" rel="stylesheet" type="text/css"/>
     
   </head>
   <body>
+    
+    <!--  Testar posicionamento e Offset  -->
+    <div class="pos1">
+      <div>Elemento 1</div>
+      <div class="pos2">Elemento 2</div>
+    </div>
     
     <!--  $(...) e $.find(...)  -->
     <div class="find1Parent2">

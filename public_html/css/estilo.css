@@ -1,2 +1,19 @@
 
 
+
+
+.pos1{
+  position: absolute;
+  left: 300px;
+  top: 100px;
+  border: 1px solid blue;
+  padding: 20px;
+}
+.pos1 > *{
+  border: 1px solid orange;
+}
+.pos2{
+  position: absolute;
+  left: 30px;
+  bottom: -20px;
+}

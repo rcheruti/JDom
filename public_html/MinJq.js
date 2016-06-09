@@ -553,6 +553,7 @@
     });
   }
   
+  /*
   function _removeEquals( arr ){
     var len = arr.length, i = len, j;
     while(i--){
@@ -563,6 +564,7 @@
     }
     return arr;
   }
+  /* */
   function _elStr( objOrStr ){
     return $.isString(objOrStr) && /^\s*</.test(objOrStr);
   }

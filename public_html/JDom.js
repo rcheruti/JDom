@@ -123,11 +123,15 @@
       return this;
     };
   }
-  ElementProto.toggleClass = function (str) {
-    if (this.hasClass(str))
-      this.removeClass(str);
-    else
-      this.addClass(str);
+  ElementProto.toggleClass = function(){
+    var i = 0, len = arguments.length, str;
+    for(; i < len; i++){
+      str = arguments[i];
+      if (this.hasClass(str))
+        this.removeClass(str);
+      else
+        this.addClass(str);
+    }
     return this;
   };
   
@@ -275,8 +279,9 @@
     else this.find(str).remove();
     return this;
   };
-  ElementProto.removeAttr = function( str ){
-    this.removeAttribute(str);
+  ElementProto.removeAttr = function(){
+    var len = arguments.length;
+    while( len-- > -1 ) this.removeAttribute(arguments[len]);
     return this;
   };
   ElementProto.removeData = function( strOrArr ){

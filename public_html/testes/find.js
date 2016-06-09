@@ -7,14 +7,19 @@ describe('Testando funções de busca pelo DOM e no objeto "$":',function(){
     expect( $('.find1 [data-attr1="valor2"] ul li').length ).toBe(3);
     expect( $('.find1 > .elemento3 section h3').length ).toBe(1);
   });
+  
+  // "$.is" é um apelido para "$.matches" (impl. nativa do navegador).
   it('Testando $.is(...):',function(){
     expect( $('.find1').is('.find1') ).toBe(true);
     expect( $('.find1 .elemento1').is('.elemento1') ).toBe(true);
-    // diferença de maiúscula e minúscula!
+    // diferença de maiúscula e minúscula no nome de classe!
     expect( $('.find1 .elemento1').is('.EleMento1') ).toBe(false); 
     expect( $('.find1 .elemento2').is('[data-attr1="valor2"]') ).toBe(true);
     expect( $('.find1 > .elemento3 section h3').is('h3') ).toBe(true);
     expect( $('.find1 > .elemento3 section h3').is('H3') ).toBe(true);
+    // Atenção! Só verifica o primeiro elemento da lista!
+    expect( $('.find1 .elemento1').is('li') ).toBe(false); 
+    expect( $('.find1 .elemento1').eq(1).is('li') ).toBe(true); 
   });
   it('Testando $.find(...):',function(){
     var el = $('.find1');

@@ -16,6 +16,7 @@ describe('Testando funções de texto e HTML (incluindo criar nós com texto)',f
     expect( el.eq(1).text() ).toBe('Novo texto');
     expect( el.eq(2).text() ).toBe('Novo texto');
   });
+  
   it('Testando $.html(...):',function(){
     var el = $('.html1 > *');
     
@@ -31,6 +32,7 @@ describe('Testando funções de texto e HTML (incluindo criar nós com texto)',f
     expect( el.eq(1).html() ).toBe('<ul><li>Novo texto</li></ul>');
     expect( el.eq(2).html() ).toBe('<ul><li>Novo texto</li></ul>');
   });
+  
   it('Testando $.append(...):',function(){
     var elAppend1 = $('.append1');
     
@@ -39,6 +41,30 @@ describe('Testando funções de texto e HTML (incluindo criar nós com texto)',f
     elAppend1.children('.elemento2').append( elAppend1.children('.elemento3') );
     expect( $('.append1 > *').length ).toBe(2);
     expect( elAppend1.children('.elemento2').children().length ).toBe(2);
+  });
+  
+  it('Testando $.wrap(...):',function(){
+    var el = $('.wrap1'), 
+        childs = el.children();
+    
+    expect( childs.eq(0).parent().is('.wrap1') ).toBe(true);
+    expect( childs.eq(1).parent().is('.wrap1') ).toBe(true);
+    expect( childs.eq(2).parent().is('.wrap1') ).toBe(true);
+    
+    childs.eq(0).wrap('<section>');
+    expect( childs.eq(0).parent().is('.wrap1') ).toBe(false);
+    expect( childs.eq(0).parent().is('section') ).toBe(true);
+    expect( childs.eq(1).parent().is('.wrap1') ).toBe(true);
+    expect( childs.eq(2).parent().is('.wrap1') ).toBe(true);
+    
+    childs = el.children();
+    childs.wrap('<article>');
+    expect( childs.eq(0).parent().is('.wrap1') ).toBe(false);
+    expect( childs.eq(1).parent().is('.wrap1') ).toBe(false);
+    expect( childs.eq(2).parent().is('.wrap1') ).toBe(false);
+    expect( childs.eq(0).parent().is('article') ).toBe(true);
+    expect( childs.eq(1).parent().is('article') ).toBe(true);
+    expect( childs.eq(2).parent().is('article') ).toBe(true);
   });
   
 });

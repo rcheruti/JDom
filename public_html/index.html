@@ -22,6 +22,7 @@
     <script src="testes/funcoesEstaticas$.js" type="text/javascript"></script>
     <script src="testes/find.js" type="text/javascript"></script>
     <script src="testes/textAndHTML.js" type="text/javascript"></script>
+    <script src="testes/classesAndAttr.js" type="text/javascript"></script>
     
   </head>
   <body>
@@ -61,12 +62,33 @@
       <div class="elemento3">Texto 3</div>
     </div>
     
-    <!--  para $.append(...)  -->
+    <!--  $.append(...)  -->
     <div class="append1">
       <div class="elemento1">Append 1</div>
       <div class="elemento2"><span>Append 2</span></div>
       <div class="elemento3">Append 3</div>
     </div>
+    
+    <!--  $.wrap(...)  -->
+    <div class="wrap1">
+      <div class="elemento1">Texto 1</div>
+      <div class="elemento2">Texto 2</div>
+      <div class="elemento3">Texto 3</div>
+    </div>
+    
+    <!--  para testar classes e atributos  -->
+    <div class="classes1 classeTesteX classeTesteY">
+      <div class="elemento1 classeTesteX classeTesteY"></div>
+      <div class="elemento2 classeTesteX classeTesteZ"></div>
+      <div class="elemento3"></div>
+    </div>
+    <div class="attr1">
+      <div class="elemento1" data-attr1="valor1" data-attr2="valor2"></div>
+      <div class="elemento2" data-attr1="valor1" data-attr3="valor3"></div>
+      <div class="elemento3"></div>
+    </div>
+    
+    
     
     <!--  ========   Colocar quadro do Jasmine mais para baixo   ==========  -->
     <div style="margin: 0 0 20px;"></div>

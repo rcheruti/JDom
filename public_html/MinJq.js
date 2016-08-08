@@ -62,9 +62,30 @@
   EventTypeProto.bind = EventTypeProto.on;
   EventTypeProto.unbind = EventTypeProto.off;
   
+  var ORI_addEventListener = EventTypeProto.addEventListener ,
+      ORI_removeEventListener = EventTypeProto.removeEventListener ;
   
-  
-  
+  EventTypeProto.addEventListener = function(eventName, callback, useCapture){
+    useCapture = !!useCapture;
+    if( !this.$_listeners ) this.$_listeners = {};
+    if( !this.$_listeners[eventName] ) this.$_listeners[eventName] = [];
+    this.$_listeners[eventName].push( [eventName, callback, useCapture] );
+    ORI_addEventListener.call(this, eventName, callback, useCapture);
+  };
+  EventTypeProto.removeEventListener = function(eventName, callback, useCapture){
+    useCapture = !!useCapture;
+    if( this.$_listeners && this.$_listeners[eventName] ){
+      var temp = this.$_listeners[eventName];
+      for(var i = 0; i < temp.length; i++){
+        var arr = temp[i];
+        if( arr[0] === eventName && arr[1] === callback && arr[2] === useCapture ){
+          temp.splice(i, 1);
+          break;
+        }
+      }
+    }
+    ORI_removeEventListener.call(this, eventName, callback, useCapture);
+  };
   
   
   

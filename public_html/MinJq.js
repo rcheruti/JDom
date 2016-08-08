@@ -411,8 +411,13 @@
   //          $ function
 
   function $(param) {
-    if (!$.is$(this))
+    if (!$.is$(this)){
+      if($.isFunc(param)){ 
+        $.ready(param);
+        return $;
+      }
       return new $(param);
+    }
     if ($.is$(param))
       return param;
     if ( $.isString(param) )
@@ -444,6 +449,10 @@
   $.isObj = function(val){ return !!(val && (typeof val === 'object') && !$.isArray(val)); };
   $.isString = function(val){ return (typeof val === 'string'); };
   $.isUndef = function(val){ return (typeof val === 'undefined'); };
+  
+  $.ready = function( func ){
+    document.on('DOMContentLoaded', func, false);
+  };
   
   // Sobreescrevendo algumas funções do protótipo de Array:
   var 
@@ -502,7 +511,7 @@
       ['position'         ,GETTER_FIRST       ],
       ['prepend'          ,SETTER             ],
       ['prop'             ,MIX_GETTER_FIRST   ,null],
-      //--- ['ready'],
+      //['ready'],
       ['remove'           ,SETTER             ],
       ['removeAttr'       ,SETTER             ],
       ['removeClass'      ,SETTER             ],

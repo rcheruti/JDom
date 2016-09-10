@@ -475,6 +475,100 @@
     document.on('DOMContentLoaded', func, false);
   };
   
+  $.copy = function( target ){
+    //if( arguments.length < 1 ) return {};
+    if( arguments.length === 1 ){
+      var newObj;
+      if( $.isDate(target) ){
+        newObj = new Date(target);
+      }else if( $.isObj(target) ){
+        newObj = {};
+        $.copy( newObj, target );
+      }else if( $.isArray(target) ){
+        newObj = [];
+        $.copy( newObj, target );
+      }else{
+        newObj = target;
+      }
+      return newObj;
+    };
+    //if( !$.isObj(target) ) target = {};
+    for(var i = 1; i < arguments.length; i++){
+      _copy_Lvl( target, arguments[i] );
+    }
+    return target;
+  };
+  function _copy_Lvl( to, from, prop ){
+    if( $.isDate(from) && prop ){
+      to[prop] = new Date(from);
+    }else if( $.isObj(from) ){
+      if( prop ){
+        if( !$.isObj(to[prop]) ) to[prop] = {};
+        to = to[prop];
+      }
+      for(var g in from){
+        _copy_Lvl( to, from[g], g );
+      }
+    }else if( $.isArray(from) ){
+      if( prop ){
+        // copia de vator para vetor
+        if( !$.isArray(to[prop]) ) to[prop] = [];
+        to = to[prop];
+        for(var i = 0; i < from.length; i++) to.push( $.copy(from[i]) );
+      }else{
+        // copia de vetor para obj, com index como chave
+        for(var i = 0; i < from.length; i++) to[i] = $.copy(from[i]);
+      }
+    }else if(prop){
+      to[prop] = from;
+    }
+  }
+  
+  /*
+   * config:
+   *  method
+   *  url
+   *  async
+   *  user
+   *  password
+   *  data: o que será enviado
+   *  headers: obj com cabeçalhos adicionais
+   *  withCredentials: para CORS, indica se deve ser enviado cookies, padrão TRUE
+   */
+  $.ajax = function(url, config){
+    if( $.isObj(url) ) config = url;
+    else{
+      if(!config) config = {};
+      config.url = url;
+    }
+    if( $.isUndef(config.async) ) config.async = true;
+    if( $.isUndef(config.withCredentials) ) config.withCredentials = true;
+    
+    var data;
+    if(config.data){
+      if( $.isObj(config.data) || $.isArray(config.data) || $.isDate(config.data) ){
+        data = JSON.stringfy(config.data);
+      }else{
+        data = config.data;
+      }
+    }
+    
+    var xhr = new XMLHttpRequest();
+    if( $.isObj(config.headers) ){
+      for(var g in config.headers){
+        xhr.setRequestHeader( g, config.headers[g] );
+      }
+    }
+    xhr.withCredentials = config.withCredentials;
+    xhr.open( config.method, config.url, config.async, config.user, config.password );
+    xhr.onreadystatechange = function(){
+      // xhr.readyState === 2 // cabeçalhos recebidos (carregando)
+      // xhr.readyState === 3 // carregando
+      // xhr.readyState === 4 // concluido
+    };
+    xhr.send( config.data );
+  };
+  
   // Sobreescrevendo algumas funções do protótipo de Array:
   var 
       pushFunc = proto.push;

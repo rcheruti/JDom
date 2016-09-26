@@ -525,6 +525,8 @@
   }
   
   /*
+   * Implementação baseada na lib "axios"
+   * 
    * config:
    *  method
    *  url
@@ -541,6 +543,7 @@
       if(!config) config = {};
       config.url = url;
     }
+    if(!config.method) config.method = config.data ? 'POST' : 'GET';
     if( $.isUndef(config.async) ) config.async = true;
     if( $.isUndef(config.withCredentials) ) config.withCredentials = true;
     
@@ -553,21 +556,143 @@
       }
     }
     
-    var xhr = new XMLHttpRequest();
+    if( $.isUndef(config.async) ) config.async = true;
+    config.withCredentials = !!config.withCredentials;
+    if( !config.Authorization && 
+      !($.isUndef(config.user) && $.isUndef(config.password)) ){
+      config.Authorization = 'Basic '+ btoa( (config.user||'')+':'+(config.password||'') );
+    }
+    
+    var xhr = new XMLHttpRequest(),
+        loadEv = 'onreadystatechange',
+        xDmn = false;
+      
+    if( window.XDomainRequest && !('withCredentials' in xhr) ){
+      xhr = new window.XDomainRequest();
+      loadEv = 'onload';
+      xDmn = true;
+    }
+    xhr.withCredentials = config.withCredentials;
+    xhr.timeout = config.timeout;
+    
+    if (config.responseType) {
+      try {
+        xhr.responseType = config.responseType;
+      } catch (e) {
+        if (xhr.responseType !== 'json') {
+          throw e;
+        }
+      }
+    }
     if( $.isObj(config.headers) ){
       for(var g in config.headers){
         xhr.setRequestHeader( g, config.headers[g] );
       }
     }
-    xhr.withCredentials = config.withCredentials;
-    xhr.open( config.method, config.url, config.async, config.user, config.password );
-    xhr.onreadystatechange = function(){
-      // xhr.readyState === 2 // cabeçalhos recebidos (carregando)
-      // xhr.readyState === 3 // carregando
-      // xhr.readyState === 4 // concluido
-    };
-    xhr.send( config.data );
+    
+    
+    var nProm = (window.Q && window.Q.Promise) ? window.Q.Promise 
+                : window.Promise ? 
+                    window.Promise 
+                  : function(fn){ fn(); }; // <--  ???
+    
+    return new nProm(function(resolve, reject, progress){
+      xhr.open( config.method.toUpperCase(), 
+                config.url, 
+                config.async );
+
+      xhr[loadEv] = function(){
+        // xhr.readyState === 2 // cabeçalhos recebidos (carregando)
+        // xhr.readyState === 3 // carregando
+        // xhr.readyState === 4 // concluido
+        if(!xhr || (xhr.readyState !== 4 && !xDmn) || xhr.status === 0){
+          return;
+        }
+
+        var responseHeaders = 'getAllResponseHeaders' in xhr ? parseHeaders(xhr.getAllResponseHeaders()) : null;
+        var responseData = !config.responseType || config.responseType === 'text' ? xhr.responseText : xhr.response;
+        var response = {
+          data: responseData,
+          // IE sends 1223 instead of 204 (https://github.com/mzabriskie/axios/issues/201)
+          status: xhr.status === 1223 ? 204 : xhr.status,
+          statusText: xhr.status === 1223 ? 'No Content' : xhr.statusText,
+          headers: responseHeaders,
+          config: config,
+          request: xhr
+        };
+        
+        resolve(response);
+        xhr = null;
+      };
+      xhr.onerror = function(){
+        reject.apply(null, arguments);
+        xhr = null;
+      };
+      xhr.ontimeout = function(){
+        reject.apply(null, arguments);
+        xhr = null;
+      };
+      if(progress) xhr.addEventListener('progress', function(){
+        progress.apply(null, arguments);
+      });
+      if(progress) if(xhr.upload) xhr.upload.addEventListener('progress', function(){
+        progress.apply(null, arguments);
+      });
+
+      xhr.send( config.data );
+    });
   };
+  function parseHeaders(headers) {
+    var parsed = {};
+    var key;
+    var val;
+    var i;
+    var hSplit = headers.split('\n');
+
+    if (!headers) { return parsed; }
+    
+    for(var g in hSplit){
+      var line = hSplit[g];
+      i = line.indexOf(':');
+      key = line.substr(0, i).trim.toLowerCase();
+      val = line.substr(i + 1).trim;
+
+      if (key) {
+        parsed[key] = parsed[key] ? parsed[key] + ', ' + val : val;
+      }
+    }
+    return parsed;
+  }
+  
+  $.get = function(url, config){ 
+    if(!config) config = {}; 
+    config.method = 'GET';
+    config.url = url;
+    return $.ajax(url, config);
+  };
+  $.post = function(url, data, config){ 
+    if(!config) config = {}; 
+    config.method = 'POST';
+    config.url = url;
+    config.data = data;
+    return $.ajax(url, config);
+  };
+  $.put = function(url, data, config){ 
+    if(!config) config = {}; 
+    config.method = 'PUT';
+    config.url = url;
+    config.data = data;
+    return $.ajax(url, config);
+  };
+  $.delete = function(url, data, config){ 
+    if(!config) config = {}; 
+    config.method = 'DELETE';
+    config.url = url;
+    config.data = data;
+    return $.ajax(url, config);
+  };
+  
+  
   
   // Sobreescrevendo algumas funções do protótipo de Array:
   var 

@@ -222,6 +222,7 @@
       if( $.isUndef(val) ) 
         return window.getComputedStyle(this)[obj];
       this.style[obj] = val;
+      return this;
     }
     for( var g in obj ){
       this.style[g] = obj[g];

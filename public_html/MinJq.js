@@ -419,6 +419,7 @@
     var parents = this.parents(), res = this.position(), g, pos;
     for(g in parents){
       if( str && parents[g].is(str) ) break;
+      if( !parents[g].position ) continue;
       pos = parents[g].position();
       res.top += pos.top;
       res.left += pos.left;
@@ -471,6 +472,7 @@
   $.isObj = function(val){ return !!(val && (typeof val === 'object') && !$.isArray(val)); };
   $.isString = function(val){ return (typeof val === 'string'); };
   $.isUndef = function(val){ return (typeof val === 'undefined'); };
+  $.isElement = function(val){ return val instanceof window.Element; };
   
   $.ready = function( func ){
     document.on('DOMContentLoaded', func, false);

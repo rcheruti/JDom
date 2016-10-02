@@ -35,14 +35,45 @@
   //===========================================================================
   //          EventTarget prototype
   
+  var onCallbacksKey = 'onCallbacks';
+  
   // EventTarget para a maioria dos navegadores
   // Node para o IE!
   var EventTypeProto = (window.EventTarget || window.Node).prototype;
   EventTypeProto.off = function (eventName, callback, useCapture) {
-    return this.removeEventListener(eventName, callback, useCapture);
+    var newCallback = callback;
+    if( $.isElement(this) ){
+      var data = this.data(onCallbacksKey);
+      var key = eventName + useCapture;
+      if( !data || !data[key] ) return null;
+      var i = 0, found = false;
+      for(; i < data[key].from.length; i++){
+        if( data[key].from[i] === callback ){
+          found = true;
+          data[key].from.splice(i,1);
+          break;
+        }
+      }
+      if( !found ) return null;
+      newCallback = data[key].to[i];
+      data[key].to.splice(i,1);
+      this.data(onCallbacksKey, data);
+    }
+    return this.removeEventListener(eventName, newCallback, useCapture);
   };
   EventTypeProto.on = function (eventName, callback, useCapture) {
-    this.addEventListener(eventName, callback, useCapture);
+    var newCallback = callback;
+    if( $.isElement(this) ){
+      newCallback = callback.bind( $(this) );
+      var data = this.data(onCallbacksKey);
+      if( !data ) data = {};
+      var key = eventName + useCapture;
+      if( !data[key] ) data[key] = { from:[], to:[] };
+      data[key].from.push( callback );
+      data[key].to.push( newCallback );
+      this.data(onCallbacksKey, data);
+    }
+    this.addEventListener(eventName, newCallback, useCapture);
     return EventTypeProto.off.bind(this, eventName, callback, useCapture);
   };
   EventTypeProto.one = function (eventName, callback, useCapture, times) {
@@ -429,7 +460,7 @@
     return res;
   };
   
-
+  
   //===========================================================================
   //          $ function
 
@@ -461,6 +492,12 @@
   var proto = ($.prototype = new Array());
   $.fn = proto;
   //$.constructor = Array;
+  
+  $.blockProperties = function(){
+    for(var g in proto){ 
+      _defineProperty(proto, 5, g);
+    }
+  };
   
     // Adicionar funções auxiliares:
   $.is$ = function(val){ return val instanceof $; };
@@ -791,9 +828,8 @@
   };
   
     // bloquear a iteração desses elementos:
-  for(var g in proto){ 
-    _defineProperty(proto, 5, g);
-  }
+  $.blockProperties();
+  
 
 
   //===========================================================================

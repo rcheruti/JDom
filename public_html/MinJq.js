@@ -37,66 +37,79 @@
   
   // EventTarget para a maioria dos navegadores
   // Node para o IE!
+  // No iPad devemos usar Node, porém os objeto "document" e "window" não são Nodes
   var EventTypeProto = (window.EventTarget || window.Node).prototype;
-  EventTypeProto.off = function (eventName, callback, useCapture) {
-    var newCallback = callback;
-    if( $.isElement(this) ){
-      var key = eventName + useCapture;
-      $.removeCallback(this, key, callback);
-    }
-    return this.removeEventListener(eventName, newCallback, useCapture);
-  };
-  EventTypeProto.on = function (eventName, callback, useCapture) {
-    var newCallback = callback;
-    if( $.isElement(this) ){
-      newCallback = callback.bind( $(this) );
-      var key = eventName + useCapture;
-      $.putCallback(this, key, callback, newCallback);
-    }
-    this.addEventListener(eventName, newCallback, useCapture);
-    return EventTypeProto.off.bind(this, eventName, callback, useCapture);
-  };
-  EventTypeProto.one = function (eventName, callback, useCapture, times) {
-    if (!times)
-      times = 1;
-    else if (times < 1)
-      return function () {};
-    var _retirar = null;
-    var _func = function () {
-      callback();
-      if (!--times)
-        _retirar();
+  
+  if( window.EventTarget ){
+    __bindEventPrototype( window.EventTarget.prototype );
+  }else{
+    __bindEventPrototype( window.Node.prototype );
+    __bindEventPrototype( document );
+    __bindEventPrototype( window );
+  }
+  
+  function __bindEventPrototype( EventTypeProto ){
+    EventTypeProto.off = function (eventName, callback, useCapture) {
+      var newCallback = callback;
+      if( $.isElement(this) ){
+        var key = eventName + useCapture;
+        $.removeCallback(this, key, callback);
+      }
+      return this.removeEventListener(eventName, newCallback, useCapture);
     };
-    return _retirar = this.on(eventName, _func, useCapture);
-  };
-  
-  EventTypeProto.bind = EventTypeProto.on;
-  EventTypeProto.unbind = EventTypeProto.off;
-  
-  var ORI_addEventListener = EventTypeProto.addEventListener ,
-      ORI_removeEventListener = EventTypeProto.removeEventListener ;
-  
-  EventTypeProto.addEventListener = function(eventName, callback, useCapture){
-    useCapture = !!useCapture;
-    if( !this.$_listeners ) this.$_listeners = {};
-    if( !this.$_listeners[eventName] ) this.$_listeners[eventName] = [];
-    this.$_listeners[eventName].push( [eventName, callback, useCapture] );
-    ORI_addEventListener.call(this, eventName, callback, useCapture);
-  };
-  EventTypeProto.removeEventListener = function(eventName, callback, useCapture){
-    useCapture = !!useCapture;
-    if( this.$_listeners && this.$_listeners[eventName] ){
-      var temp = this.$_listeners[eventName];
-      for(var i = 0; i < temp.length; i++){
-        var arr = temp[i];
-        if( arr[0] === eventName && arr[1] === callback && arr[2] === useCapture ){
-          temp.splice(i, 1);
-          break;
+    EventTypeProto.on = function (eventName, callback, useCapture) {
+      var newCallback = callback;
+      if( $.isElement(this) ){
+        newCallback = callback.bind( $(this) );
+        var key = eventName + useCapture;
+        $.putCallback(this, key, callback, newCallback);
+      }
+      this.addEventListener(eventName, newCallback, useCapture);
+      return EventTypeProto.off.bind(this, eventName, callback, useCapture);
+    };
+    EventTypeProto.one = function (eventName, callback, useCapture, times) {
+      if (!times)
+        times = 1;
+      else if (times < 1)
+        return function () {};
+      var _retirar = null;
+      var _func = function () {
+        callback();
+        if (!--times)
+          _retirar();
+      };
+      return _retirar = this.on(eventName, _func, useCapture);
+    };
+
+    EventTypeProto.bind = EventTypeProto.on;
+    EventTypeProto.unbind = EventTypeProto.off;
+
+    var ORI_addEventListener = EventTypeProto.addEventListener ,
+        ORI_removeEventListener = EventTypeProto.removeEventListener ;
+
+    EventTypeProto.addEventListener = function(eventName, callback, useCapture){
+      useCapture = !!useCapture;
+      if( !this.$_listeners ) this.$_listeners = {};
+      if( !this.$_listeners[eventName] ) this.$_listeners[eventName] = [];
+      this.$_listeners[eventName].push( [eventName, callback, useCapture] );
+      ORI_addEventListener.call(this, eventName, callback, useCapture);
+    };
+    EventTypeProto.removeEventListener = function(eventName, callback, useCapture){
+      useCapture = !!useCapture;
+      if( this.$_listeners && this.$_listeners[eventName] ){
+        var temp = this.$_listeners[eventName];
+        for(var i = 0; i < temp.length; i++){
+          var arr = temp[i];
+          if( arr[0] === eventName && arr[1] === callback && arr[2] === useCapture ){
+            temp.splice(i, 1);
+            break;
+          }
         }
       }
-    }
-    ORI_removeEventListener.call(this, eventName, callback, useCapture);
-  };
+      ORI_removeEventListener.call(this, eventName, callback, useCapture);
+    };
+  }
+  
   
   
   

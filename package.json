@@ -1,6 +1,9 @@
 {
-  "name": "JDom",
+  "name": "minjq",
   "version": "1.0.0",
+  "scripts":{
+    "test":"karma start karma.conf.js"
+  },
   "keywords": [],
   "author": "rcheruti",
   "contributors": [],
@@ -10,6 +13,13 @@
     "grunt-contrib-clean": "^0.7.0",
     "grunt-contrib-concat": "^0.5.1",
     "grunt-contrib-copy": "^0.8.2",
-    "grunt-contrib-uglify": "^0.11.0"
+    "grunt-contrib-uglify": "^0.11.0",
+    "jasmine-core": "^2.3.4",
+    "karma": "^0.12.31",
+    "karma-chrome-launcher": "^0.1.12",
+    "karma-jasmine": "^0.3.5",
+    "karma-firefox-launcher":"^1.0.1",
+    "karma-ie-launcher":"1.0.0",
+    "karma-html2js-preprocessor": "^1.1.0"
   }
 }
